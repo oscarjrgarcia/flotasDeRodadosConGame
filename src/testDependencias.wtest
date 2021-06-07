@@ -1,0 +1,47 @@
+import rodados.*
+import dependencias.*
+import pedidos.*
+
+test "dependencias1" {
+
+	var cachito = new Corsa(color="rojo")
+	var cAzul = new Corsa(color="azul")
+	var cVerde = new Corsa(color="verde")
+	var k1 = new Kwid()
+	var ae1 = new AutoEspecial(capacidad=5, velocidadMaxima=160, peso=1200, color="beige")
+	var d1 = new Dependencia(empleados=45, nombre="Deportes", flotaDeRodados=[cachito, cAzul, cVerde, k1, ae1])
+	var k2 = new Kwid()
+	var k3 = new Kwid()
+	var k4 = new Kwid(tieneTanqueAdicional=false)
+	trafic.interior(popular)
+	var d2 = new Dependencia(empleados=31, nombre="Cultura", flotaDeRodados=[cachito, k2, k3, k4, trafic])
+	assert.that(d1.pesoTotalFlota() == 6450)
+	assert.that(d1.estaBienEquipada())
+	assert.that(d1.capacidadTotalEnColor("azul") == 7)
+	assert.that(d1.colorDelRodadoMasRapido() == "beige")
+	assert.that(d1.esGrande())
+	assert.that(d1.capacidadFaltante() == 25)
+	assert.that(d2.pesoTotalFlota() == 10700)
+	assert.that(not d2.estaBienEquipada())
+	assert.that(d2.capacidadTotalEnColor("azul") == 10)
+	assert.that(d2.colorDelRodadoMasRapido() == "rojo")
+	assert.that(not d2.esGrande())
+	assert.that(d2.capacidadFaltante() == 5)
+
+}
+
+test "dependencias con pedidos" {
+	
+	var auto1 = new Corsa(color="rojo")
+	var auto2 = new Kwid()
+	var auto3 = new Kwid()
+	var d3 = new Dependencia(empleados=39, nombre="Salud", flotaDeRodados=[auto1, auto2, auto3])
+	var p1 = new Pedido(distancia=940, tiempoMaximo=8, cantidadPasajeros=4, coloresIncompatibles=["verde", "negro"])
+	var p2 = new Pedido(distancia=670, tiempoMaximo=5, cantidadPasajeros=3, coloresIncompatibles=["rojo", "verde"])
+	d3.agregarPedido(p1)
+	d3.agregarPedido(p2)
+	assert.that(d3.totalPasajerosEnPedidos() == 7)
+	assert.that(not d3.puedeSatisfacerPedido(p2))
+	assert.that(d3.esIncompatibleEnTodosLosPedidos("verde"))
+	assert.that(d3.pedidosQueNoSePuedenSatisfacer() == [p2])
+}
